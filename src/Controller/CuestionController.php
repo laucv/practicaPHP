@@ -79,9 +79,10 @@ class CuestionController
      */
     public function cget(Request $request, Response $response): Response
     {
-        if (0 === $this->jwt->user_id) { //403
-            return Error::error($this->container, $request, $response, StatusCode::HTTP_FORBIDDEN);
+        if(0 === !$this->jwt->user_id){
+            return Error::error($this->container, $request, $response, StatusCode::HTTP_UNAUTHORIZED);
         }
+
         $entity_manager = Utils::getEntityManager();
         $cuestion = $this->jwt->isAdmin
             ? $entity_manager->getRepository(Cuestion::class)
@@ -148,8 +149,9 @@ class CuestionController
     public function get(Request $request, Response $response, array $args): Response
     {
         if (0 === $this->jwt->user_id) {
-            return Error::error($this->container, $request, $response, StatusCode::HTTP_FORBIDDEN);
+            return Error::error($this->container, $request, $response, StatusCode::HTTP_UNAUTHORIZED);
         }
+
         $entity_manager = Utils::getEntityManager();
         $cuestion = $entity_manager->find(Cuestion::class, $args['id']);
 
@@ -211,6 +213,11 @@ class CuestionController
      */
     public function delete(Request $request, Response $response, array $args): Response
     {
+
+        if (0 === $this->jwt->user_id) {
+            return Error::error($this->container, $request, $response, StatusCode::HTTP_UNAUTHORIZED);
+        }
+
         if (!$this->jwt->isMaestro) { // 403
             return Error::error($this->container, $request, $response, StatusCode::HTTP_FORBIDDEN);
         }
@@ -354,6 +361,10 @@ class CuestionController
      */
     public function post(Request $request, Response $response): Response
     {
+        if (0 === $this->jwt->user_id) {
+            return Error::error($this->container, $request, $response, StatusCode::HTTP_UNAUTHORIZED);
+        }
+
         if (!$this->jwt->isMaestro) {
             return Error::error($this->container, $request, $response, StatusCode::HTTP_FORBIDDEN);
         }
@@ -449,6 +460,10 @@ class CuestionController
      */
     public function put(Request $request, Response $response, array $args): Response
     {
+        if (0 === $this->jwt->user_id) {
+            return Error::error($this->container, $request, $response, StatusCode::HTTP_UNAUTHORIZED);
+        }
+
         if (!$this->jwt->isMaestro) { // 403
             return Error::error($this->container, $request, $response, StatusCode::HTTP_FORBIDDEN);
         }
