@@ -1,0 +1,21 @@
+version: '3'
+
+volumes:
+    log:
+        driver: local
+
+services:
+    tdwapi:
+        image: lan143/bitbucket-pipelines-php-mysql
+        build: .
+        working_dir: /var/www
+        environment:
+            docker: "true"
+        ports:
+            - "3306:3306"
+            - "8000:8080"
+        volumes:
+            - .:/var/www:rw
+#            - ./logs:/var/www/logs
+#        command: bash -c "php -S 0.0.0.0:8080 -t public public/index.php"
+        command: bash -c "service mysql start && mysql -h ${DATABASE_HOST:-localhost} -u ${DATABASE_USER:-root} -p${DATABASE_PASSWD:-root} -e 'create database ${DATABASE_NAME:-db_name};' && composer install && php -S 0.0.0.0:8080 -t public public/index.php"

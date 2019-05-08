@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://phpunit.readthedocs.io/en/8.0/configuration.html, XmlUnboundNsPrefix -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/8.0/phpunit.xsd"
+         backupGlobals="false"
+         colors="true"
+         bootstrap="tests/tests_bootstrap.php"
+		 cacheTokens="false"	 
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         forceCoversAnnotation="false"
+         printerClass="PHPUnit\TextUI\ResultPrinter"
+         processIsolation="false"
+		 stopOnError="false"
+         stopOnFailure="false"
+         stopOnIncomplete="false"
+         stopOnSkipped="false"
+         stopOnRisky="false"
+         testSuiteLoaderClass="PHPUnit\Runner\StandardTestSuiteLoader"
+         timeoutForSmallTests="1"
+         timeoutForMediumTests="10"
+         timeoutForLargeTests="60"
+         verbose="true"
+>
+  <php>
+    <ini name="error_reporting" value="-1" />
+    <!-- define your env variables for the test env here -->
+
+    <!-- CONFIGURAR!!! -->
+      <env name="DATABASE_HOST" value="localhost" />
+      <env name="DATABASE_NAME" value="tdw19" />
+      <env name="DATABASE_PORT" value="3306" />
+      <env name="DATABASE_USER" value="root" />
+      <env name="DATABASE_PASSWD" value="root" />
+      <env name="DATABASE_DRIVER" value="pdo_mysql" />
+      <env name="DATABASE_CHARSET" value="UTF8" />
+
+      <env name="ENTITY_DIR" value="./src/Entity/" />
+      <env name="DEBUG" value="0" />
+
+      <env name="RUTA_API" value="/api/v1" />
+      <env name="RUTA_LOGIN" value="/api/v1/login" />
+      <env name="JWT_SECRET" value="CAMBIAR!!! UPM TDW2019 Palabra Secreta para Generar JWTs" />
+    <!-- CONFIGURAR!!! -->
+  </php>
+
+  <!-- logging>
+    <log type="coverage-clover" target="build/logs/clover.xml"/>
+  </logging -->
+  <testsuites>
+    <testsuite name="TDW19 Users API test suite">
+      <directory suffix="Test.php">tests</directory>
+    </testsuite>
+  </testsuites>
+
+  <filter>
+    <whitelist>
+      <directory>src/</directory>
+      <exclude>
+        <directory>./src/scripts/</directory>
+        <directory>./tests/</directory>
+        <directory>./bin/</directory>
+        <directory>./vendor/</directory>
+        <file>./src/Error.php</file>
+        <file>./src/Install.php</file>
+        <file>./src/Utils.php</file>
+        <file>./src/swagger_def.php</file>
+      </exclude>
+    </whitelist>
+  </filter>
+
+</phpunit>

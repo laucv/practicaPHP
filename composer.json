@@ -1,0 +1,62 @@
+{
+    "name": "tdw_upm/tdw19_users",
+    "description": "TDW19 User API",
+    "license": "MIT",
+    "type": "project",
+    "homepage": "http://miw.etsisi.upm.es",
+    "keywords": ["microframework", "rest", "slim", "doctrine", "psr7"],
+    "authors": [
+        {
+            "name": "TDW UPM",
+            "homepage": "http://miw.etsisi.upm.es/",
+            "email": "miw@etsisi.upm.es",
+            "role": "Developer"
+        }
+        ],
+    "autoload": {
+        "psr-4": {
+            "TDW\\GCuest\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TDW\\Tests\\GCuest\\": "tests/"
+        }
+    },
+    "require": {
+		"php": ">=7.2",
+        "ext-json": "*",
+        "ext-mysqli": "*",
+        "ext-pdo": "*",
+        "composer/composer": "1.8.*",
+        "doctrine/orm": "^2.6",
+        "slim/slim": "^3.12",
+        "monolog/monolog": "^1.24",
+        "vlucas/phpdotenv": "^3.3",
+        "tuupola/slim-jwt-auth": "^2.4"
+    },
+    "require-dev": {
+        "fzaninotto/faker": "^1.8",
+        "phpunit/phpunit": "^8.0",
+        "roave/security-advisories": "dev-master",
+        "zircote/swagger-php": "^3.0"
+    },
+    "config": {
+        "bin-dir": "bin/",
+        "classmap-authoritative": true
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "TDW\\GCuest\\Install::preUpdateSchema",
+            "TDW\\GCuest\\Install::postInstall"
+        ],
+        "start": "php -S 127.0.0.1:8000 -t public",
+        "test": "./bin/phpunit -v --coverage-text --stderr",
+        "openapi": "./bin/openapi ./src --output ./public/api-docs/models/openapi.yaml"
+    },
+    "scripts-descriptions": {
+        "start": "Lanza el servidor interno del intérprete de PHP",
+        "test": "Ejecuta todos los test desarrollados",
+        "openapi": "Genera la especificación OpenAPI en formato YAML a partir de las anotaciones"
+    }
+}

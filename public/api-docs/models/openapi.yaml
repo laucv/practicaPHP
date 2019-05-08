@@ -1,0 +1,647 @@
+openapi: 3.0.0
+info:
+  title: 'TDW REST api'
+  description: '[UPM] TDW REST api operations'
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
+  version: 2.0.0
+servers:
+  -
+    url: 'http://localhost:8000/api/v1'
+    description: 'TDW Production server (uses live data)'
+paths:
+  /questions:
+    get:
+      tags:
+        - Questions
+      summary: 'Returns all questions'
+      description: 'Returns all questions from the system that the user has access to.'
+      operationId: tdw_cget_questions
+      responses:
+        '200':
+          description: 'Array of questions'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionsArray'
+        '401':
+          $ref: '#/components/responses/401_Standard_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        -
+          TDWApiSecurity: []
+    post:
+      tags:
+        - Questions
+      summary: 'Creates a new question'
+      description: 'Creates a new question'
+      operationId: tdw_post_questions
+      requestBody:
+        description: '`Question` properties to add to the system'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionData'
+      responses:
+        '201':
+          description: '`Created`: question created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '401':
+          $ref: '#/components/responses/401_Standard_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '409':
+          description: '`Conflict`: the creator does not exist or is not a teacher.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                code: 409
+                message: '`Conflict`: the creator does not exist or is not a teacher.'
+      security:
+        -
+          TDWApiSecurity: []
+    options:
+      tags:
+        - Questions
+      summary: 'Provides the list of HTTP supported methods'
+      description: 'Return a `Allow` header with a comma separated list of HTTP supported methods.'
+      operationId: tdw_options_questions
+      responses:
+        '200':
+          description: '`Allow` header &lt;Response body is empty&gt;'
+          headers:
+            Allow:
+              description: 'List of HTTP supported methods'
+              schema:
+                type: string
+  '/questions/{questionId}':
+    get:
+      tags:
+        - Questions
+      summary: 'Returns a question based on a single ID'
+      description: 'Returns the question identified by `questionId`.'
+      operationId: tdw_get_questions
+      parameters:
+        -
+          $ref: '#/components/parameters/questionId'
+      responses:
+        '200':
+          description: Question
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '401':
+          $ref: '#/components/responses/401_Standard_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        -
+          TDWApiSecurity: []
+    put:
+      tags:
+        - Questions
+      summary: 'Updates a question'
+      description: 'Updates the question identified by `questionId`.'
+      operationId: tdw_put_questions
+      parameters:
+        -
+          $ref: '#/components/parameters/questionId'
+      requestBody:
+        description: '`Question` data to update'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionData'
+      responses:
+        '209':
+          description: '`Content Returned`: question previously existed and is now updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '401':
+          $ref: '#/components/responses/401_Standard_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+        '409':
+          description: '`Conflict`: the creator does not exist or is not a teacher.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                code: 409
+                message: '`Conflict`: the creator does not exist or is not a teacher.'
+      security:
+        -
+          TDWApiSecurity: []
+    delete:
+      tags:
+        - Questions
+      summary: 'Deletes a question'
+      description: 'Deletes the question identified by `questionId`.'
+      operationId: tdw_delete_questions
+      parameters:
+        -
+          $ref: '#/components/parameters/questionId'
+      responses:
+        '204':
+          description: 'Question deleted &lt;Response body is empty&gt;'
+        '401':
+          $ref: '#/components/responses/401_Standard_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        -
+          TDWApiSecurity: []
+    options:
+      tags:
+        - Questions
+      summary: 'Provides the list of HTTP supported methods'
+      description: 'Return a `Allow` header with a comma separated list of HTTP supported methods.'
+      operationId: tdw_options_questions_id
+      parameters:
+        -
+          $ref: '#/components/parameters/questionId'
+      responses:
+        '200':
+          description: '`Allow` header &lt;Response body is empty&gt;'
+          headers:
+            Allow:
+              description: 'List of HTTP supported methods'
+              schema:
+                type: string
+  /login:
+    post:
+      tags:
+        - login
+      summary: 'Returns TDW api token'
+      description: 'Returns TDW api authorization token.'
+      operationId: tdw_post_login
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                _username:
+                  description: 'User name'
+                  type: string
+                _password:
+                  description: 'User password'
+                  type: string
+                  format: password
+              type: object
+      responses:
+        '200':
+          description: 'TDW Users api token'
+          headers:
+            X-Token:
+              description: 'api authorization token'
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                token: '<JSON web token>'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+  /users:
+    get:
+      tags:
+        - Users
+      summary: 'Returns all users'
+      description: 'Returns all users from the system that the user has access to.'
+      operationId: tdw_cget_users
+      responses:
+        '200':
+          description: 'Array of users'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersArray'
+        '401':
+          $ref: '#/components/responses/401_Standard_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        -
+          TDWApiSecurity: []
+    post:
+      tags:
+        - Users
+      summary: 'Creates a new user'
+      description: 'Creates a new user'
+      operationId: tdw_post_users
+      requestBody:
+        description: '`User` properties to add to the system'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserData'
+      responses:
+        '201':
+          description: '`Created`: user created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: '`Bad Request`: username or e-mail already exists'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                code: 400
+                message: '`Bad Request`: username or e-mail already exists'
+        '401':
+          $ref: '#/components/responses/401_Standard_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '422':
+          description: '`Unprocessable entity`: username, e-mail or password is left out'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                code: 422
+                message: '`Unprocessable entity`: username, e-mail or password is left out'
+      security:
+        -
+          TDWApiSecurity: []
+    options:
+      tags:
+        - Users
+      summary: 'Provides the list of HTTP supported methods'
+      description: 'Return a `Allow` header with a comma separated list of HTTP supported methods.'
+      operationId: tdw_options_users
+      responses:
+        '200':
+          description: '`Allow` header &lt;Response body is empty&gt;'
+          headers:
+            Allow:
+              description: 'List of HTTP supported methods'
+              schema:
+                type: string
+  '/users/{userId}':
+    get:
+      tags:
+        - Users
+      summary: 'Returns a user based on a single ID'
+      description: 'Returns the user identified by `userId`.'
+      operationId: tdw_get_users
+      parameters:
+        -
+          $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/401_Standard_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        -
+          TDWApiSecurity: []
+    put:
+      tags:
+        - Users
+      summary: 'Updates a user'
+      description: 'Updates the user identified by `userId`.'
+      operationId: tdw_put_users
+      parameters:
+        -
+          $ref: '#/components/parameters/userId'
+      requestBody:
+        description: '`User` data to update'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserData'
+      responses:
+        '209':
+          description: '`Content Returned`: user previously existed and is now updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: '`Bad Request`: username or e-mail already exists'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+              example:
+                code: 400
+                message: '`Bad Request`: username or e-mail already exists'
+        '401':
+          $ref: '#/components/responses/401_Standard_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        -
+          TDWApiSecurity: []
+    delete:
+      tags:
+        - Users
+      summary: 'Deletes a user'
+      description: 'Deletes the user identified by `userId`.'
+      operationId: tdw_delete_users
+      parameters:
+        -
+          $ref: '#/components/parameters/userId'
+      responses:
+        '204':
+          description: 'User deleted &lt;Response body is empty&gt;'
+        '401':
+          $ref: '#/components/responses/401_Standard_Response'
+        '403':
+          $ref: '#/components/responses/403_Forbidden_Response'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        -
+          TDWApiSecurity: []
+    options:
+      tags:
+        - Users
+      summary: 'Provides the list of HTTP supported methods'
+      description: 'Return a `Allow` header with a comma separated list of HTTP supported methods.'
+      operationId: tdw_options_users_id
+      parameters:
+        -
+          $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: '`Allow` header &lt;Response body is empty&gt;'
+          headers:
+            Allow:
+              description: 'List of HTTP supported methods'
+              schema:
+                type: string
+  '/users/username/{username}':
+    get:
+      tags:
+        - Users
+      summary: 'Returns status code 204 if username exists'
+      description: 'Returns status code 204 if `username` exists.'
+      operationId: tdw_get_user_name
+      parameters:
+        -
+          $ref: '#/components/parameters/username'
+      responses:
+        '204':
+          description: 'Username exists &lt;Response body is empty&gt;'
+        '404':
+          $ref: '#/components/responses/404_Resource_Not_Found_Response'
+      security:
+        -
+          TDWApiSecurity: []
+components:
+  schemas:
+    Question:
+      required:
+        - idCuestion
+      properties:
+        idCuestion:
+          description: 'Question Id'
+          type: integer
+          format: int64
+        enunciadoDescripcion:
+          description: 'Question description'
+          type: string
+        enunciadoDisponible:
+          description: 'Denotes if question is available'
+          type: boolean
+        creador:
+          description: 'Question''s id creator'
+          type: integer
+          format: int64
+        estado:
+          description: 'Question''s state'
+          type: string
+      type: object
+      example:
+        cuestion:
+          idCuestion: 805
+          enunciadoDescripcion: 'Question description'
+          enunciadoDisponible: true
+          creador: 7
+          estado: abierta
+    QuestionData:
+      properties:
+        enunciadoDescripcion:
+          description: 'Question description'
+          type: string
+        enunciadoDisponible:
+          description: 'Denotes if question is available'
+          type: boolean
+        creador:
+          description: 'Question''s id creator'
+          type: integer
+          format: int64
+        estado:
+          description: 'Question status'
+          type: string
+      type: object
+      example:
+        enunciadoDescripcion: 'Question description'
+        enunciadoDisponible: true
+        creador: 501
+        estado: abierta
+    QuestionsArray:
+      properties:
+        cuestiones:
+          description: 'Questions array'
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+      type: object
+    User:
+      required:
+        - id
+        - username
+        - email
+      properties:
+        id:
+          description: 'User Id'
+          type: integer
+          format: int64
+        username:
+          description: 'User name'
+          type: string
+        email:
+          description: 'User email'
+          type: string
+        enabled:
+          description: 'Denotes if user is enabled'
+          type: boolean
+        isMaestro:
+          description: 'Denotes if user is Maestro'
+          type: boolean
+        isAdmin:
+          description: 'Denotes if user has admin privileges'
+          type: boolean
+      type: object
+      example:
+        usuario:
+          id: 1508
+          username: 'User name'
+          email: 'User email'
+          enabled: true
+          maestro: false
+          admin: false
+    UserData:
+      properties:
+        username:
+          description: 'User name'
+          type: string
+        email:
+          description: 'User email'
+          type: string
+        password:
+          description: 'User password'
+          type: string
+          format: password
+        enabled:
+          description: 'Denotes if user is enabled'
+          type: boolean
+        isMaestro:
+          description: 'Denotes if user is Maestro'
+          type: boolean
+        isAdmin:
+          description: 'Denotes if user has admin privileges'
+          type: boolean
+      type: object
+      example:
+        username: User_name
+        email: User_email@example.com
+        password: User_password
+        enabled: true
+        isMaestro: false
+        isAdmin: false
+    UsersArray:
+      properties:
+        usuarios:
+          description: 'Users array'
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+      type: object
+    Message:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          description: 'Response code'
+          type: integer
+          format: int64
+        message:
+          description: 'Response message'
+          type: string
+      type: object
+      example:
+        code: 200
+        message: Ok
+  responses:
+    401_Standard_Response:
+      description: '`Unauthorized`: invalid `Authorization` header'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+          example:
+            code: 401
+            message: '`Unauthorized`: invalid `Authorization` header'
+    403_Forbidden_Response:
+      description: '`Forbidden`: you don''t have permission to access'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+          example:
+            code: 403
+            message: '`Forbidden`: you don''t have permission to access'
+    404_Resource_Not_Found_Response:
+      description: '`Not found`: resource not found'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+          example:
+            code: 404
+            message: '`Not found`: resource not found'
+  parameters:
+    userId:
+      name: userId
+      in: path
+      description: 'ID of user'
+      required: true
+      schema:
+        type: integer
+        format: int64
+    username:
+      name: username
+      in: path
+      description: 'User name'
+      required: true
+      schema:
+        type: string
+    questionId:
+      name: questionId
+      in: path
+      description: 'ID of question'
+      required: true
+      schema:
+        type: integer
+        format: int64
+  securitySchemes:
+    TDWApiSecurity:
+      type: http
+      bearerFormat: JWT
+      scheme: bearer
+tags:
+  -
+    name: login
+    description: 'User login'
+  -
+    name: Users
+    description: 'User management'
+  -
+    name: Questions
+    description: 'Question management'
