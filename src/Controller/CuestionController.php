@@ -374,7 +374,7 @@ class CuestionController
             ?? json_decode($request->getBody(), true);
         $entity_manager = Utils::getEntityManager();
 
-        $creador = (isset($req_data["creador"])) ? $entity_manager->find(Usuario::class, $req_data["creador"]) : null;
+        $creador = (isset($req_data['creador'])) ? $entity_manager->find(Usuario::class, $req_data["creador"]) : null;
 
         if(null !== $creador && !$creador->isMaestro()){ //Usuario no es maestro
             return Error::error($this->container, $request, $response, StatusCode::HTTP_CONFLICT);
@@ -486,8 +486,8 @@ class CuestionController
         }
         // creador
         if (isset($req_data['creador'])) {
-            $creador = (isset($req_data["creador"])) ? $entity_manager->find(Usuario::class, $req_data["creador"]) : null;
-            if(null !== $creador && !$creador->isMaestro()){ //Usuario no existe o no es maestro
+            $creador = $entity_manager->find(Usuario::class, $req_data["creador"]);
+            if(!$creador->isMaestro()){ //Usuario no es maestro
                 return Error::error($this->container, $request, $response, StatusCode::HTTP_CONFLICT);
             }
             $cuestion->setCreador($creador);
