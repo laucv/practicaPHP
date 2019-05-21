@@ -92,7 +92,8 @@ $ ./bin/phpunit [--testdox]
 El código fuente incluye las anotaciones necesarias para generar la especificación [OpenAPI 3.0][openapi] en formato [YAML][yaml].
 Para generar dicha especificación se deberá ejecutar el comando:
 ```
-$ ./bin/openapi ./src --output ./public/api-docs/models/openapi.yaml
+$ .\bin\openapi .\src --output .\public\api-docs\models\openapi.yaml
+
 ```
 
 Como resultado de la ejecución de este comando se generará el fichero `openapi.yaml` en el
